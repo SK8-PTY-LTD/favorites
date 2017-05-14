@@ -2,6 +2,7 @@
 /**
 * Primary plugin API functions
 */
+use SimpleFavorites\Entities\Favorite\Favorite;
 
 use SimpleFavorites\Entities\Favorite\FavoriteButton;
 use SimpleFavorites\Entities\Post\FavoriteCount;
@@ -9,6 +10,21 @@ use SimpleFavorites\Entities\User\UserFavorites;
 use SimpleFavorites\Entities\Post\PostFavorites;
 use SimpleFavorites\Entities\Favorite\ClearFavoritesButton;
 
+
+/**
+* Get the favorite button
+* @param $post_id int, defaults to current post
+* @param $site_id int, defaults to current blog/site
+* @return html
+*/
+function user_favorites_posts($post_id = null, $status = null, $site_id = null)
+{
+	
+	$favorite = new Favorite;
+	$favorite->update($post_id, $status, $site_id, $site_id);
+
+	return get_favorites_count($post_id);
+}
 
 /**
 * Get the favorite button
