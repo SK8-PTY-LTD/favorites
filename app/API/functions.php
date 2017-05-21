@@ -217,3 +217,105 @@ function the_clear_favorites_button($site_id = null, $text = null)
 	echo get_clear_favorites_button($site_id, $text);
 }
 
+/**
+* Favourite REST API
+* @author Jack
+* @see http://v2.wp-api.org/extending/adding/
+*/
+
+/**
+* Get an array of User Favorites
+* @param $user_id int, defaults to current user
+* @param $site_id int, defaults to current blog/site
+* @param $filters array of post types/taxonomies
+* @return array
+*/
+function rest_get_user_favorites( $data ) {
+
+  $user_id = null;
+
+  if (!is_user_logged_in()) {
+    return "User is not logged in";
+  } else {
+    $user_id = get_current_user_id();
+  }
+
+  $idList = get_user_favorites($user_id, $site_id, $filters = ["cf47rs_property"]);
+
+  if (empty($idList)) {
+    return $idList;
+  } 
+
+  // $filter = array('post_type' => 'cf47rs_property',
+  //                 'post__in' => $idList);
+
+  $favouriteArray = get_posts($filter);
+
+  return $idList;
+}
+add_action( 'rest_api_init', function () {
+  register_rest_route( 'favorites/v1', '/my', array(
+    'methods' => 'GET',
+    'callback' => 'rest_get_user_favorites',
+    'args' => array(
+    ),
+  ) );
+} );
+
+/**
+* Get the total favorite count for a post
+* Post ID not required if inside the loop
+* @param int $post_id
+*/
+function rest_get_favorites_count( $data ) {
+
+  $post_id = $data['id'];
+  $favouriteNumber = get_favorites_count($post_id);
+
+  return $favouriteNumber;
+}
+add_action( 'rest_api_init', function () {
+  register_rest_route( 'favorites/v1', '/(?P<id>\d+)', array(
+    'methods' => 'GET',
+    'callback' => 'rest_get_favorites_count',
+    'args' => array(
+      'id' => array(
+        'validate_callback' => function($param, $request, $key) {
+          return is_numeric( $param );
+        }
+      ),
+    ),
+  ) );
+} );
+
+/**
+* Get the total favorite count for a post
+* Post ID not required if inside the loop
+* @param int $post_id
+*/
+function rest_user_favorites_post( $request ) {
+
+  $parameters = $request->get_json_params();
+
+  $post_id = $parameters['id'];
+  $status = $parameters['status'];
+  $site_id = $parameters['site_id'];
+
+  $new_favourite_count = user_favorites_posts($post_id, $status, $site_id);
+
+  return $new_favourite_count;
+}
+add_action( 'rest_api_init', function () {
+  register_rest_route( 'favorites/v1', '/(?P<id>\d+)', array(
+    'methods' => 'POST',
+    'callback' => 'rest_user_favorites_post',
+    'args' => array(
+      'id' => array(
+        'validate_callback' => function($param, $request, $key) {
+          return is_numeric( $param );
+        }
+      ),
+    ),
+  ) );
+} );
+
