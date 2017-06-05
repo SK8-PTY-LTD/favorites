@@ -251,7 +251,7 @@ function rest_get_user_favorites( $data ) {
 
   $favouriteArray = get_posts($filter);
 
-  return $idList;
+  return array_values($idList);
 }
 add_action( 'rest_api_init', function () {
   register_rest_route( 'favorites/v1', '/my', array(
