@@ -1,16 +1,14 @@
 <?php 
+namespace Favorites\Entities\Post;
 
-namespace SimpleFavorites\Entities\Post;
-
-use SimpleFavorites\Config\SettingsRepository;
-use SimpleFavorites\Entities\Favorite\FavoriteButton;
+use Favorites\Config\SettingsRepository;
+use Favorites\Entities\Favorite\FavoriteButton;
 
 /**
 * Post Actions and Filters
 */
 class PostHooks 
 {
-
 	/**
 	* Settings Repository
 	*/
@@ -38,6 +36,7 @@ class PostHooks
 	public function filterContent($content)
 	{
 		global $post;
+		if ( !$post ) return $content;
 		$this->post = $post;
 		$this->content = $content;
 
@@ -66,5 +65,4 @@ class PostHooks
 		}
 		return $output;
 	}
-
 }

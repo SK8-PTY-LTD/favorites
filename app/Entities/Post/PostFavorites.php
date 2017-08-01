@@ -1,9 +1,8 @@
 <?php
+namespace Favorites\Entities\Post;
 
-namespace SimpleFavorites\Entities\Post;
-
-use SimpleFavorites\Entities\User\UserRepository;
-use SimpleFavorites\Entities\Post\FavoriteCount;
+use Favorites\Entities\User\UserRepository;
+use Favorites\Entities\Post\FavoriteCount;
 
 /**
 * Get the users who have favorited a specific post
@@ -21,21 +20,27 @@ class PostFavorites
 	private $site_id;
 
 	/**
+	* User Role
+	*/
+	private $user_role;
+
+	/**
 	* User Repository
-	* @var SimpleFavorites\Entities\User\UserRepository;
+	* @var Favorites\Entities\User\UserRepository;
 	*/
 	private $user_repo;
 
 	/**
 	* Favorite Count
-	* @var SimpleFavorites\Entities\Post\FavoriteCount
+	* @var Favorites\Entities\Post\FavoriteCount
 	*/
 	private $favorite_count;
 
-	public function __construct($post_id, $site_id)
+	public function __construct($post_id, $site_id, $user_role)
 	{
 		$this->post_id = ( $post_id ) ? $post_id : get_the_id();
-		$this->site_id = ( $site_id ) ? $site_id : 1;
+		$this->site_id = ( $site_id ) ? $site_id : get_current_blog_id();
+		$this->user_role = ( $user_role ) ? $user_role : '';
 		$this->user_repo = new UserRepository;
 		$this->favorite_count = new FavoriteCount;
 	}
@@ -61,7 +66,8 @@ class PostFavorites
 	private function getAllUsers()
 	{
 		$user_query = new \WP_User_Query(array(
-			'blog_id' => ( $this->site_id ) ? $this->site_id : 1
+			'blog_id' => ( $this->site_id ) ? $this->site_id : get_current_blog_id(),
+			'role'    => $this->user_role
 		));
 		$users = $user_query->get_results();
 		return $users;

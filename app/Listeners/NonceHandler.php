@@ -1,13 +1,11 @@
 <?php 
-
-namespace SimpleFavorites\Listeners;
+namespace Favorites\Listeners;
 
 /**
 * Creates a Nonce for Cached Pages
 */
 class NonceHandler 
 {
-
 	public function __construct()
 	{
 		$this->generateNonce();
@@ -21,5 +19,4 @@ class NonceHandler
 		);
 		return wp_send_json($data);
 	}
-
 }

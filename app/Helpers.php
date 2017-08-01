@@ -1,13 +1,11 @@
 <?php 
-
-namespace SimpleFavorites;
+namespace Favorites;
 
 /**
 * Static Helper Methods
 */
 class Helpers 
 {
-
 	/**
 	* Plugin Root Directory
 	*/
@@ -29,8 +27,8 @@ class Helpers
 	*/
 	public static function version()
 	{
-		global $simple_favorites_version;
-		return $simple_favorites_version;
+		global $favorites_version;
+		return $favorites_version;
 	}
 
 	/**
@@ -74,6 +72,18 @@ class Helpers
 	}
 
 	/**
+	* Groups Exists
+	* checks if groups array is in favorites array yet
+	* @since 2.2
+	* @return boolean
+	*/
+	public static function groupsExist($site_favorites)
+	{
+		if ( isset($site_favorites['groups']) && !empty($site_favorites['groups']) ) return true;
+		return false;
+	}
+
+	/**
 	* Pluck the site favorites from saved meta array
 	* @since 1.1
 	* @param int $site_id
@@ -88,5 +98,23 @@ class Helpers
 		return array();
 	}
 
-
+	/**
+	* Pluck the site favorites from saved meta array
+	* @since 1.1
+	* @param int $site_id
+	* @param array $favorites (user meta)
+	* @return array
+	*/
+	public static function pluckGroupFavorites($group_id, $site_id, $all_favorites)
+	{
+		foreach($all_favorites as $key => $site_favorites){
+			if ( $site_favorites['site_id'] !== $site_id ) return;
+			foreach ( $all_favorites[$key]['groups'] as $group ){
+				if ( $group['group_id'] == $group_id ){
+					return $group['posts'];
+				}
+			}
+		}
+		return array();
+	}
 }

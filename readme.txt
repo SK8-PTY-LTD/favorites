@@ -3,9 +3,8 @@ Contributors: kylephillips
 Donate link: http://favoriteposts.com/
 Tags: favorites, like, bookmark, favorite, likes, bookmarks, favourite, favourites, multisite, wishlist, wish list
 Requires at least: 3.8
-Tested up to: 4.6
-Stable tag: 1.2.3
-
+Tested up to: 4.8
+Stable tag: 2.1.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -58,14 +57,74 @@ As of version 1.1.0, Favorites is compatible with multisite installations. By de
 
 2. Enable for anonymous users and save in the session or a browser cookie. Logged-in users' favorites are saved in a custom user meta field.
 
-3. Enable and display per post type, or use the functions/shortcodes to manually add to templates.
+3. Optionally add a modal authentication gate for unauthenticated users
 
-4. Add a favorites button to any post type. Customize the button text and/or icon.
+4. Enable and display per post type, or use the functions/shortcodes to manually add to templates.
 
-5. Use the included functions or shortcodes to display a list of user favorites. A template function is also provided to fetch an array of user favorite post ids.
+5. Customize the button markup to fit your theme
+
+6. Or use a predefined button type and customize colors to fit your site's style.
+
+7. Every option is customizable, including the loading state for favorite buttons.
+
+8. Customize favorite lists
 
 
 == Changelog ==
+
+= 2.1.6 =
+* Adds option of redirecting to a page/post by ID if an anonmyous user attempts to favorite an item
+* Adds shortcode processing to authentication gate modal content
+* Bug fix that was causing unexpected errors in content filtered by 'the_content' filter.
+
+= 2.1.5 =
+* Bug fix where button HTML filters were not being applied to AJAX/cache enabled sites. The post id is not available as a parameter on button html on cache-enabled sites.
+* Adds additional compatibility for logged-in favoriting on hosts with aggressive server-side caching
+
+= 2.1.4 =
+* Post favorite counts using the shortcode [favorite_count] or the functions get_favorites_count/the_favorites_count now update without page reload.
+* Adds parameter to the [user_favorites] shortcode for "No Favorites" text. Overrides the plugin setting. [user_favorites no_favorites="Your Custom Text"]
+* Updated code that was breaking in PHP versions less than 5.4. End-of-life PHP version support will be dropped in Favorites v3
+* Bug fix where total favorite count was showing "1" before a user had favorited any posts
+* Adds additional permalink field under the customized listing visual editor
+* Bug fix where nonce was not loading correctly on some sites, resulting in an "Incorrect form field" error
+* Adds status filter to function filter parameters
+
+= 2.1.3 =
+* Bug fix where authentication gate modal was not appearing correctly due to a Javascript error on sites with the cache option disabled.
+* Bug fix where lists were being emptied on page load with the cache option enabled.
+
+= 2.1.2 =
+* Added additional filters for the listing wrapper CSS classes and the listing element CSS classes. See the plugin website for details.
+* Added plugin setting and filter for customizing the button html element type.
+* Added a "Development Mode" setting for logging various data to the browser console in order to help with support and debugging.
+* Reverted default post types in favorites list to display all post types.
+* Updates filters run on authorization gate modal that were conflicting with some themes and plugins.
+
+= 2.1.1 =
+* Fixes bug where Favorites admin javascript was loading outside the plugin settings area, causing preventing some sites from saving posts.
+
+= 2.1.0 =
+* Option added to enable a modal notification for anonymous users. Modal content is editable under Settings > Favorites > Users. Anonymous users must be disabled, and the "Require Login & Show Modal" must be checked. The content is also available via a filter: favorites/authentication_modal_content. If the plugin css has been disabled and this feature is required, please see the plugin styles for new css classes required for modals to function.
+* Button customization options added, including color settings and preset button types. Visit Settings > Favorites > Display & Post Types to customize the button. In addition to now having the ability to choose a preset button type, button colors may be specified to better match your theme without editing CSS files.
+* Option added to customize the favorites list. Options are now included for specifying the HTML element type and custom CSS classes for both the list wrapper element and individua listing elements. Additionally, the listings may be fully customized using a standard WordPress editor field.
+* Various filters have been added. See the plugin website for a detailed list of available filters.
+
+= 2.0.2 =
+* Option added to use a css/html loading indicator in place of an image. Additional filters added for theme use
+* Shortcode option added to the favorites list "user_favorites" for including the post thumbnail. To include the thumbnail, pass the option include_thumbnails="true". To specify a thumbnail size, pass it in as an option: thumbnail_size="thumbnail"
+* Shortcode option added to the favorites list "user_favorites" for including the post excerpt. To include the excerpt, pass the option include_excerpt="true"
+* Filters added for the list thumbnail and list excerpt. See plugin documentation for names and parameters
+* Plugin settings redesigned
+
+= 2.0.1 =
+* Javascript callback functions have been deprecated in place of events. Deprecated functions will be removed in a later version. Please see the plugin documentation on using the new events
+* App namespace renamed to "Favorites". Important: any developers extending the plugin core should update any references in PHP namespaces to \Favorites\
+* Plugin text domain updated to "favorites" to follow WordPress requirements
+* AJAX actions renamed to remove "simple" prefix
+* Bug fix where adding a favorite required a page refresh for it to appear in favorite lists
+* Added API function to get the total count of favorites across all posts
+* Tested with WordPress 4.8
 
 = 1.2.4 =
 * Added option to display favorite counts in admin columns on a per-post type basis. Visit Settings > Favorites > Display to enable the columns.
@@ -182,9 +241,9 @@ Displays the total number of favorites a user has favorited. Template functions 
 User favorites are stored as an array of post ids. Logged-in users' favorites are stored as a custom user meta field, while anonymous users' favorites are stored in either the session or browser cookie (configurable in the plugin settings). If the user id parameter is omitted, the favorites default to the current user. The site id parameter is optional, for use in multisite installations (defaults to current site).
 
 * **Get function (returns array of IDs):** `get_user_favorites($user_id, $site_id)`
-* **Get function (returns html list):** `get_user_favorites_list($user_id, $site_id, $include_links, $filters, $include_button)`
-* **Print function (prints an html list):** `the_user_favorites_list($user_id, $site_id, $include_links, $filters, $include_button)`
-* **Shortcode (prints an html list, with the option of omitting links):** `[user_favorites user_id="" include_links="true" site_id="" include_buttons="false" post_types="post"]
+* **Get function (returns html list):** `get_user_favorites_list($user_id, $site_id, $include_links, $filters, $include_button, $include_thumbnails = false, $thumbnail_size = 'thumbnail', $include_excerpt = false)`
+* **Print function (prints an html list):** `the_user_favorites_list($user_id, $site_id, $include_links, $filters, $include_button, $include_thumbnails = false, $thumbnail_size = 'thumbnail', $include_excerpt = false)`
+* **Shortcode (prints an html list, with the option of omitting links):** `[user_favorites user_id="" include_links="true" site_id="" include_buttons="false" post_types="post" include_thumbnails="false" thumbnail_size="thumbnail" include_excerpt="false"]
 
 **List Users Who Have Favorited a Post**
 
@@ -202,3 +261,9 @@ Displays a button that allows users to clear all of their favorites.
 * **Get function:** `get_clear_favorites_button($site_id, $text)`
 * **Print function:** `the_clear_favorites_button($site_id, $text)`
 * **Shortcode:** `[clear_favorites_button site_id="" text="Clear Favorites"]
+
+**Favorite Count (Across all Posts)**
+Displays the total number of favorites for a given site.
+
+* **Get function:** `get_total_favorites_count($site_id)`
+* **Print function:** `the_total_favorites_count($site_id)`

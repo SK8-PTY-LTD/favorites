@@ -1,17 +1,15 @@
 <?php 
+namespace Favorites\Config;
 
-namespace SimpleFavorites\Config;
-
-use SimpleFavorites\Config\SettingsRepository;
-use SimpleFavorites\Entities\PostType\PostTypeRepository;
-use SimpleFavorites\Helpers;
+use Favorites\Config\SettingsRepository;
+use Favorites\Entities\PostType\PostTypeRepository;
+use Favorites\Helpers;
 
 /**
 * Plugin Settings
 */
 class Settings 
 {
-
 	/**
 	* Plugin Name
 	*/
@@ -41,8 +39,8 @@ class Settings
 	*/
 	private function setName()
 	{
-		global $simple_favorites_name;
-		$this->plugin_name = $simple_favorites_name;
+		global $favorites_name;
+		$this->plugin_name = $favorites_name;
 	}
 
 	/**
@@ -51,7 +49,7 @@ class Settings
 	public function registerSettingsPage()
 	{
 		add_options_page( 
-			$this->plugin_name . ' ' . __('Settings', 'simplefavorites'),
+			$this->plugin_name . ' ' . __('Settings', 'favorites'),
 			$this->plugin_name,
 			'manage_options',
 			'simple-favorites', 
@@ -74,8 +72,9 @@ class Settings
 	public function registerSettings()
 	{
 		register_setting( 'simple-favorites-general', 'simplefavorites_dependencies' );
+		register_setting( 'simple-favorites-general', 'simplefavorites_cache_enabled' );
+		register_setting( 'simple-favorites-general', 'simplefavorites_dev_mode');
 		register_setting( 'simple-favorites-users', 'simplefavorites_users' );
 		register_setting( 'simple-favorites-display', 'simplefavorites_display' );
 	}
-
 }

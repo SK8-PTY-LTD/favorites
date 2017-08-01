@@ -1,12 +1,10 @@
 <?php 
+namespace Favorites\API\Shortcodes;
 
-namespace SimpleFavorites\API\Shortcodes;
-
-use SimpleFavorites\Entities\User\UserFavorites;
+use Favorites\Entities\User\UserFavorites;
 
 class UserFavoritesShortcode 
 {
-
 	/**
 	* Shortcode Options
 	* @var array
@@ -34,7 +32,11 @@ class UserFavoritesShortcode
 			'site_id' => '',
 			'include_links' => 'true',
 			'post_types' => '',
-			'include_buttons' => 'false'
+			'include_buttons' => 'false',
+			'include_thumbnails' => 'false',
+			'thumbnail_size' => 'thumbnail',
+			'include_excerpts' => 'false',
+			'no_favorites' => ''
 		), $options);
 	}
 
@@ -57,13 +59,25 @@ class UserFavoritesShortcode
 		$this->setOptions($options);
 		$this->parsePostTypes();
 		
-		$this->options['include_links'] = ( $this->options['include_links'] == 'true' ) ? true : false;
-		$this->options['include_buttons'] = ( $this->options['include_buttons'] == 'true' ) ? true : false;
 		if ( $this->options['user_id'] == "" ) $this->options['user_id'] = null;
 		if ( $this->options['site_id'] == "" ) $this->options['site_id'] = null;
+		$this->options['include_links'] = ( $this->options['include_links'] == 'true' ) ? true : false;
+		$this->options['include_buttons'] = ( $this->options['include_buttons'] == 'true' ) ? true : false;
+		$this->options['include_thumbnails'] = ( $this->options['include_thumbnails'] == 'true' ) ? true : false;
+		$this->options['include_excerpts'] = ( $this->options['include_excerpts'] == 'true' ) ? true : false;
 
-		$favorites = new UserFavorites($this->options['user_id'], $this->options['site_id'], $this->options['include_links'], $this->filters);
-		return $favorites->getFavoritesList($this->options['include_buttons']);
+		$favorites = new UserFavorites(
+			$this->options['user_id'], 
+			$this->options['site_id'], 
+			$this->options['include_links'], 
+			$this->filters
+		);
+		return $favorites->getFavoritesList(
+			$this->options['include_buttons'], 
+			$this->options['include_thumbnails'], 
+			$this->options['thumbnail_size'], 
+			$this->options['include_excerpts'],
+			$this->options['no_favorites']
+		);
 	}
-
 }

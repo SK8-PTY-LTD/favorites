@@ -1,9 +1,8 @@
 <?php
+namespace Favorites\Entities\Favorite;
 
-namespace SimpleFavorites\Entities\Favorite;
-
-use SimpleFavorites\Entities\User\UserRepository;
-use SimpleFavorites\Config\SettingsRepository;
+use Favorites\Entities\User\UserRepository;
+use Favorites\Config\SettingsRepository;
 
 class ClearFavoritesButton
 {

@@ -1,8 +1,7 @@
 <?php
+namespace Favorites\Entities\Favorite;
 
-namespace SimpleFavorites\Entities\Favorite;
-
-use SimpleFavorites\Config\SettingsRepository;
+use Favorites\Config\SettingsRepository;
 
 /**
 * Sync all favorites for a specific site
@@ -58,7 +57,8 @@ class SyncAllFavorites
 	*/
 	private function updateUserMeta()
 	{
-		if ( !is_user_logged_in() ) return false;
-		return update_user_meta( get_current_user_id(), 'simplefavorites', $this->favorites );
+		if ( !isset($_POST['user_id']) ) return false;
+		if ( !isset($_POST['logged_in']) && intval($_POST['logged_in']) !== 1 ) return false;
+		return update_user_meta( intval($_POST['user_id']), 'simplefavorites', $this->favorites );
 	}
 }

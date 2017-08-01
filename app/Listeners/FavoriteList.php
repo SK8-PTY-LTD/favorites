@@ -1,8 +1,7 @@
 <?php
+namespace Favorites\Listeners;
 
-namespace SimpleFavorites\Listeners;
-
-use SimpleFavorites\Entities\User\UserFavorites;
+use Favorites\Entities\User\UserFavorites;
 
 class FavoriteList extends AJAXListenerBase
 {
@@ -22,7 +21,7 @@ class FavoriteList extends AJAXListenerBase
 		parent::__construct();
 		$this->setData();
 		$this->getList();
-		wp_send_json(array('status' => 'success', 'list' => $this->list));
+		wp_send_json(array('status' => 'success', 'list' => $this->list, 'data' => $this->data));
 	}
 
 	/**
@@ -32,9 +31,18 @@ class FavoriteList extends AJAXListenerBase
 	{
 		$this->data['user_id'] = ( isset($_POST['userid']) ) ? intval($_POST['userid']) : null;
 		$this->data['site_id'] = ( isset($_POST['siteid']) ) ? intval($_POST['siteid']) : null;
-		$this->data['includelinks'] = ( isset($_POST['includelinks']) && $_POST['includelinks'] == 'true' ) ? true : false;
-		$this->data['includebuttons'] = ( isset($_POST['includebuttons']) && $_POST['includebuttons'] == 'true' ) ? true : false;
-		$this->data['posttypes'] = ( isset($_POST['posttype']) ) ? explode(',', $_POST['posttype']) : array();
+		$this->data['include_links'] = ( isset($_POST['include_links']) && $_POST['include_links'] == 'true' ) ? true : false;
+		$this->data['include_buttons'] = ( isset($_POST['include_buttons']) && $_POST['include_buttons'] == 'true' ) ? true : false;
+		$this->data['include_thumbnails'] = ( isset($_POST['include_thumbnails']) && $_POST['include_thumbnails'] == 'true' ) ? true : false;
+		$this->data['thumbnail_size'] = ( isset($_POST['thumbnail_size']) && $_POST['thumbnail_size'] != '' ) ? sanitize_text_field($_POST['thumbnail_size']) : 'thumbnail';
+		$this->data['include_excerpt'] = ( isset($_POST['include_excerpt']) && $_POST['include_excerpt'] == 'true' ) ? true : false;
+		$this->data['no_favorites'] = ( isset($_POST['no_favorites']) ) ? sanitize_text_field($_POST['no_favorites']) : '';
+		$this->data['post_types'] = ( isset($_POST['post_types']) ) ? explode(',', $_POST['post_types']) : array();
+
+		// For Cached Sites
+		if ( !isset($_POST['logged_in']) || intval($_POST['logged_in']) !== 1 ) return;
+		if ( !isset($_POST['user_id_current']) ) return;
+		if ( !$this->data['user_id'] ) $this->data['user_id'] = intval($_POST['user_id_current']);
 	}
 
 	/**
@@ -42,12 +50,24 @@ class FavoriteList extends AJAXListenerBase
 	*/
 	private function getList()
 	{
-		$this->list = get_user_favorites_list(
-			$user_id = $this->data['user_id'], 
-			$site_id = $this->data['site_id'], 
-			$include_links = $this->data['includelinks'], 
-			$filters = array('post_type'=> $this->data['posttypes']),
-			$include_button = $this->data['includebuttons']
+		global $blog_id;
+		$site_id = ( is_multisite() && is_null($site_id) ) ? $blog_id : $site_id;
+		if ( !is_multisite() ) $site_id = 1;
+
+		$filters = ( !empty($this->data['post_types']) ) ? array('post_type' => $this->data['post_types']) : null;
+		
+		$favorites = new UserFavorites(
+			$this->data['user_id'], 
+			$this->data['site_id'], 
+			$this->data['include_links'], 
+			$filters
+		);
+		$this->list = $favorites->getFavoritesList(
+			$include_button = $this->data['include_buttons'], 
+			$this->data['include_thumbnails'], 
+			$this->data['thumbnail_size'], 
+			$this->data['include_excerpt'],
+			$this->data['no_favorites']
 		);
 	}
 }
