@@ -2,28 +2,18 @@
 /**
 * Primary plugin API functions
 */
-
-use Favorites\Entities\Favorite\Favorite;
-
+use Favorites\Entities\Favorite\Favorite; // Added by Jack
 use Favorites\Entities\Favorite\FavoriteButton;
 use Favorites\Entities\Post\FavoriteCount;
 use Favorites\Entities\User\UserFavorites;
 use Favorites\Entities\Post\PostFavorites;
 use Favorites\Entities\Favorite\ClearFavoritesButton;
 
-/**
-* Get the favorite button
-* @param $post_id int, defaults to current post
-* @param $site_id int, defaults to current blog/site
-* @return html
-*/
-function user_favorites_posts($post_id = null, $status = null, $site_id = null)
-{
-	
-	$favorite = new Favorite;
-	$favorite->update($post_id, $status, $site_id, $site_id);
-	return get_favorites_count($post_id);
-}
+use Favorites\Entities\Favorite\FavoriteButton;
+use Favorites\Entities\Post\FavoriteCount;
+use Favorites\Entities\User\UserFavorites;
+use Favorites\Entities\Post\PostFavorites;
+use Favorites\Entities\Favorite\ClearFavoritesButton;
 
 /**
 * Get the favorite button
@@ -273,6 +263,8 @@ function the_total_favorites_count($site_id = null)
 	echo get_total_favorites_count($site_id);
 }
 
+
+
 /**
 * Favourite REST API
 * @author Jack
@@ -332,6 +324,20 @@ add_action( 'rest_api_init', function () {
     ),
   ) );
 } );
+
+/**
+* Get the favorite button
+* @param $post_id int, defaults to current post
+* @param $site_id int, defaults to current blog/site
+* @return html
+*/
+function user_favorites_posts($post_id = null, $status = null, $site_id = null)
+{
+	
+	$favorite = new Favorite;
+	$favorite->update($post_id, $status, $site_id, $site_id);
+	return get_favorites_count($post_id);
+}
 /**
 * Get the total favorite count for a post
 * Post ID not required if inside the loop
