@@ -337,10 +337,11 @@ function user_favorites_posts($post_id = null, $status = null, $site_id = null)
 * Post ID not required if inside the loop
 * @param int $post_id
 */
-function rest_sk8tech_user_favorites_post( $request = null ) {
-  $parameters = $request->get_json_params();
+function rest_sk8tech_user_favorites_post( $data = null ) {
+  $parameters = $data->get_json_params();
   $post_id = $parameters['id'];
-  $status = $parameters['status'];
+  $status = $data['status'];
+  // $status = $parameters['status'];
   $site_id = $parameters['site_id'];
   $new_favourite_count = user_favorites_posts($post_id, $status, $site_id);
   return $new_favourite_count;
