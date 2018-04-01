@@ -288,25 +288,21 @@ function rest_sk8tech_get_user_favorites( $data = null ) {
   return $idList;
 }
 add_action( 'rest_api_init', function () {
-  register_rest_route( 'favorites/v1', '/my', array(
+  register_rest_route( 'favorites/v2', '/my', array(
     'methods' => 'GET',
     'callback' => 'rest_sk8tech_get_user_favorites',
     'args' => array(
     ),
   ) );
 } );
+
 /**
 * Get the total favorite count for a post
 * Post ID not required if inside the loop
 * @param int $post_id
 */
-function rest_sk8tech_get_favorites_count( $data = null ) {
-  $post_id = $data['id'];
-  $favouriteNumber = get_favorites_count($post_id);
-  return $favouriteNumber;
-}
 add_action( 'rest_api_init', function () {
-  register_rest_route( 'favorites/v1', '/(?P<id>\d+)', array(
+  register_rest_route( 'favorites/v2', '/(?P<id>\d+)', array(
     'methods' => 'GET',
     'callback' => 'rest_sk8tech_get_favorites_count',
     'args' => array(
@@ -318,36 +314,19 @@ add_action( 'rest_api_init', function () {
     ),
   ) );
 } );
-
-/**
-* Get the favorite button
-* @param $post_id int, defaults to current post
-* @param $site_id int, defaults to current blog/site
-* @return html
-*/
-function user_favorites_posts($post_id = null, $status = null, $site_id = null)
-{
-	
-	$favorite = new Favorite;
-	$favorite->update($post_id, $status, $site_id, $site_id);
-	return get_favorites_count($post_id);
+function rest_sk8tech_get_favorites_count( $data = null ) {
+  $post_id = $data['id'];
+  $favouriteNumber = get_favorites_count($post_id);
+  return (int)strip_tags($favouriteNumber);
 }
+
 /**
 * Get the total favorite count for a post
 * Post ID not required if inside the loop
 * @param int $post_id
 */
-function rest_sk8tech_user_favorites_post( $data = null ) {
-  $parameters = $data->get_json_params();
-  $post_id = $parameters['id'];
-  $status = $data['status'];
-  // $status = $parameters['status'];
-  $site_id = $parameters['site_id'];
-  $new_favourite_count = user_favorites_posts($post_id, $status, $site_id);
-  return $new_favourite_count;
-}
 add_action( 'rest_api_init', function () {
-  register_rest_route( 'favorites/v1', '/(?P<id>\d+)', array(
+  register_rest_route( 'favorites/v2', '/(?P<id>\d+)', array(
     'methods' => 'POST',
     'callback' => 'rest_sk8tech_user_favorites_post',
     'args' => array(
@@ -359,3 +338,23 @@ add_action( 'rest_api_init', function () {
     ),
   ) );
 } );
+function rest_sk8tech_user_favorites_post( $data = null ) {
+  $parameters = $data->get_json_params();
+  $post_id = $data['id'];
+  $status = $parameters['status'];
+  $site_id = $parameters['site_id'];
+  $new_favourite_count = user_favorites_posts($post_id, $status, $site_id);
+  return (int)strip_tags($new_favourite_count);
+}
+/**
+* Get the favorite button
+* @param $post_id int, defaults to current post
+* @param $site_id int, defaults to current blog/site
+* @return html
+*/
+function user_favorites_posts($post_id = null, $status = null, $site_id = null)
+{
+	$favorite = new Favorite;
+	$favorite->update($post_id, $status, $site_id, $site_id);
+	return get_favorites_count($post_id);
+}
