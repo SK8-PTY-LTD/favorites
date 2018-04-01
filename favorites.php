@@ -1,12 +1,12 @@
 <?php
 /*
-Plugin Name: Favorites
-Plugin URI: http://favoriteposts.com
+Plugin Name: WP REST Favorites
+Plugin URI: https://sk8.tech
 Description: Simple and flexible favorite buttons for any post type.
 Version: 2.1.6
-Author: Kyle Phillips
+Author: SK8Tech
 Author URI: https://github.com/kylephillips
-Text Domain: favorites
+Text Domain: wp-rest-favorites
 Domain Path: /languages/
 License: GPLv2 or later.
 Copyright: Kyle Phillips
