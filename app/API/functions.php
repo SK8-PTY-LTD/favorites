@@ -9,12 +9,6 @@ use Favorites\Entities\User\UserFavorites;
 use Favorites\Entities\Post\PostFavorites;
 use Favorites\Entities\Favorite\ClearFavoritesButton;
 
-use Favorites\Entities\Favorite\FavoriteButton;
-use Favorites\Entities\Post\FavoriteCount;
-use Favorites\Entities\User\UserFavorites;
-use Favorites\Entities\Post\PostFavorites;
-use Favorites\Entities\Favorite\ClearFavoritesButton;
-
 /**
 * Get the favorite button
 * @param $post_id int, defaults to current post
